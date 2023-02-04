@@ -1,0 +1,82 @@
+object dAimAuto: TdAimAuto
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = #1040#1074#1090#1086#1074#1099#1095#1080#1089#1083#1077#1085#1080#1077
+  ClientHeight = 83
+  ClientWidth = 206
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  Padding.Left = 6
+  Padding.Top = 3
+  Padding.Right = 6
+  Padding.Bottom = 3
+  OldCreateOrder = False
+  Position = poOwnerFormCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 6
+    Top = 3
+    Width = 194
+    Height = 23
+    Align = alClient
+    Caption = #1044#1072#1081#1090#1077' '#1089#1072#1084#1091#1088#1072#1102' '#1094#1077#1083#1100' '#1074#1099#1095#1080#1089#1083#1077#1085#1080#1103':'
+    Layout = tlCenter
+    ExplicitWidth = 174
+    ExplicitHeight = 13
+  end
+  object eAim: TEdit
+    AlignWithMargins = True
+    Left = 9
+    Top = 29
+    Width = 188
+    Height = 21
+    Align = alBottom
+    TabOrder = 0
+    Text = '3,1415926535'
+    ExplicitLeft = 272
+    ExplicitTop = 83
+    ExplicitWidth = 121
+  end
+  object FlowPanel1: TFlowPanel
+    Left = 6
+    Top = 53
+    Width = 194
+    Height = 27
+    Align = alBottom
+    BevelOuter = bvNone
+    Caption = 'FlowPanel1'
+    FlowStyle = fsRightLeftTopBottom
+    ShowCaption = False
+    TabOrder = 1
+    ExplicitLeft = 0
+    ExplicitTop = 94
+    ExplicitWidth = 312
+    object BitBtn1: TBitBtn
+      Left = 119
+      Top = 0
+      Width = 75
+      Height = 25
+      DoubleBuffered = True
+      Kind = bkCancel
+      ParentDoubleBuffered = False
+      TabOrder = 0
+    end
+    object BitBtn2: TBitBtn
+      Left = 44
+      Top = 0
+      Width = 75
+      Height = 25
+      DoubleBuffered = True
+      Kind = bkOK
+      ParentDoubleBuffered = False
+      TabOrder = 1
+    end
+  end
+end
