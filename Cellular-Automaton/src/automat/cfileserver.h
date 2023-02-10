@@ -5,6 +5,7 @@
 #include "cfield.h"
 
 namespace automat {
+    
 class cFileServer
 {
 public:

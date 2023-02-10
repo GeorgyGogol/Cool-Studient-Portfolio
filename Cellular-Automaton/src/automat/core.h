@@ -2,6 +2,7 @@
 #define CORE_H
 
 #include "ccell.h"
+#include "cfieldsettings.h"
 #include "cfield.h"
 #include "cfileserver.h"
 

@@ -1,6 +1,6 @@
 #include "ccell.h"
 
-using namespace automat;
+namespace automat {
 
 cCell::cCell() :
     Status(false)
@@ -26,6 +26,13 @@ cCell cCell::operator=(const cCell& aim)
     return *this;
 }
 
+cCell cCell::operator=(const bool& src)
+{
+    Status = src;
+
+    return *this;
+}
+
 
 bool cCell::getStatus() const noexcept
 {
@@ -40,5 +47,7 @@ void cCell::setStatus(const bool& state) noexcept
 void cCell::switchStatus() noexcept
 {
     Status = !Status;
+}
+
 }
 

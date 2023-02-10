@@ -1,25 +1,48 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "fieldsettingsform.h"
+
 #include <memory>
 #include <QDateTime>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+#include <QFileDialog>
+#include <QTextCodec>
 
-//static someObject* so;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    Field(nullptr),
     isRun(false), delay(0),
-    worldAge(new QLabel(this)),
-    aliveCount(new QLabel(this)),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->statusBar->addWidget(worldAge, 0);
-    ui->statusBar->addWidget(aliveCount, 1);
-
-    Field = new automat::cField(32, 32);
 
     mainScene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(mainScene);
+
+    Timer = new QTimer(this);
+    connect(Timer, &QTimer::timeout, this, &MainWindow::TimerTickSlot);
+    Timer->setInterval(1000 / 10);
+
+    UpdateGUIState();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+    DeleteField();
+    delete mainScene;
+}
+
+void MainWindow::CreateField(const automat::FieldSettings& fs)
+{
+    if (Field) return;
+
+    Field = new automat::cField(fs);
+
     GCell* cell;
     for (auto y = 0; y < Field->getHeight(); ++y){
         for (auto x = 0; x < Field->getWidth(); ++x) {
@@ -33,43 +56,86 @@ MainWindow::MainWindow(QWidget *parent) :
             cell = nullptr;
         }
     }
-    ui->graphicsView->setScene(mainScene);
 
-    Timer = new QTimer(this);
-    connect(Timer, &QTimer::timeout, this, &MainWindow::TimerTickSlot);
-    Timer->setInterval(1000 / 10);
     Timer->start();
 }
 
-MainWindow::~MainWindow()
+void MainWindow::DeleteField()
 {
-    delete ui;
-    delete mainScene;
+    if (!Field) return;
 
-    std::string dateStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm").toStdString() + ".txt";
+    mainScene->clear();
+    Timer->stop();
+    delete Field;
+    Field = nullptr;
+}
+
+void MainWindow::LoadField(QString path)
+{
+    if (Field) return;
 
     automat::cFileServer server;
-    server.SaveTo(Field, dateStamp.c_str());
 
-    delete Field;
-}
-
-void MainWindow::checkStatus()
-{
-    if (isRun) {
-        ui->bpRun->setText("Остановить");
-    }
-    else {
-        ui->bpRun->setText("Запустить");
+    try {
+        Field = server.LoadFrom(path.toStdString().c_str());
+    } catch (...) {
+        return;
     }
 
-    ui->pbStep->setEnabled(!isRun);
+
+    mainScene->clear();
+    mainScene->update();
+
+    GCell* cell;
+    for (auto y = 0; y < Field->getHeight(); ++y){
+        for (auto x = 0; x < Field->getWidth(); ++x) {
+            cell = new GCell(Field->getCell(x, y));
+
+            cell->setY(y * 50);
+            cell->setX(x * 50);
+            cell->setCanChangeState(true);
+
+            mainScene->addItem(cell);
+            cell = nullptr;
+        }
+    }
+
+    Timer->start();
 }
 
-void MainWindow::updateStatusInformation()
+void MainWindow::UpdateGUIState()
 {
-    worldAge->setText("Возраст мира: " + QString::number(Field->getAge()));
-    aliveCount->setText("Живых клеток: " + QString::number(Field->getAliveCount()));
+    bool state = Field;
+
+    ui->action_CreateNewField->setEnabled(!state);
+    ui->action_CloseField->setEnabled(state);
+    ui->action_SaveAs->setEnabled(state);
+    ui->action_CloseField->setEnabled(state);
+
+    ui->action_OneStep->setEnabled(state && !isRun);
+    ui->action_RunStop->setEnabled(state);
+
+    if (state){
+        QIcon iconState;
+        QString textState;
+        if (isRun){
+            iconState = QIcon(":/img/icons/stop");
+            textState = "Остановить";
+        }
+        else {
+            iconState = QIcon(":/img/icons/play");
+            textState = "Запустить";
+        }
+        ui->action_RunStop->setIcon(iconState);
+        ui->action_RunStop->setText(textState);
+        ui->pbRun->setIcon(iconState);
+        ui->pbRun->setText(textState);
+    }
+}
+
+bool MainWindow::doStep()
+{
+    return Field->step();
 }
 
 void MainWindow::TimerTickSlot()
@@ -78,25 +144,93 @@ void MainWindow::TimerTickSlot()
 
     if (isRun){
         if (delay >= 5) {
-            isRun = Field->step();
+            isRun = doStep();
+            if (!isRun) UpdateGUIState();
             delay = 0;
-            checkStatus();
         }
         ++delay;
     }
 
-    updateStatusInformation();
+    //updateStatusInformation();
 }
 
-void MainWindow::on_pbStep_clicked()
+void MainWindow::on_action_CreateNewField_triggered()
 {
-    if (Field->getAliveCount() > 0) Field->step();
-    updateStatusInformation();
+    std::unique_ptr<FieldSettingsForm> window (new FieldSettingsForm(this));
+
+    if (window->exec() == QDialog::Accepted) {
+        automat::FieldSettings fs;
+        fs.Width = static_cast<unsigned int>(window->getWidth());
+        fs.Height = static_cast<unsigned int>(window->getHeight());
+        fs.FieldName = window->getName().toStdString();
+        fs.CloseTopBottom = window->getTopBottomClose();
+        fs.CloseLeftRight = window->getLeftRightClose();
+
+        CreateField(fs);
+    }
+
+    UpdateGUIState();
 }
 
-void MainWindow::on_bpRun_clicked()
+void MainWindow::on_action_CloseField_triggered()
 {
-    isRun = !isRun && (Field->getAliveCount() > 0);
+    DeleteField();
+    UpdateGUIState();
+}
+
+void MainWindow::on_action_SaveAs_triggered()
+{
+    QString fPath =
+            QFileDialog::getSaveFileName(
+                this,
+                "Сохранить поле как...",
+                QDir::currentPath(),
+                "Field Files (*.txt);;All files (*.txt)"
+                );
+
+    if (fPath.length() < 1) return;
+
+    automat::cFileServer server;
+    server.SaveTo(Field, fPath.toStdString().c_str());
+}
+
+void MainWindow::on_action_Load_triggered()
+{
+    QString fPath =
+            QFileDialog::getOpenFileName(
+                this,
+                "Сохранить поле как...",
+                QDir::currentPath(),
+                "Field Files (*.txt);;All files (*.txt)"
+                );
+
+    if (fPath.length() < 1) return;
+
+    DeleteField();
+    LoadField(fPath);
+    UpdateGUIState();
+}
+
+void MainWindow::on_action_OneStep_triggered()
+{
+    doStep();
+}
+
+void MainWindow::on_action_RunStop_triggered()
+{
     delay = 0;
-    checkStatus();
+    isRun = !isRun;
+    UpdateGUIState();
 }
+
+void MainWindow::on_action_About_triggered()
+{
+    QFile resAbout(":/txt/About");
+    resAbout.open(QIODevice::ReadOnly);
+    QTextStream load(&resAbout);
+    load.setCodec(QTextCodec::codecForName("UTF-8"));
+    QString sAbout = load.readAll();
+
+    QMessageBox::about(this, "Клеточный автомат", sAbout);
+}
+

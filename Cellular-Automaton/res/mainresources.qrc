@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/img/icons">
+        <file alias="new">icons/img_new.png</file>
+        <file alias="close">icons/img_close.png</file>
+        <file alias="play">icons/img_play.png</file>
+        <file alias="save">icons/img_save.png</file>
+        <file alias="stop">icons/img_stop.png</file>
+        <file alias="accept">icons/img_accept.png</file>
+        <file alias="reject">icons/img_cancel.png</file>
+    </qresource>
+    <qresource prefix="/txt">
+        <file alias="About">txts/About.txt</file>
+    </qresource>
+</RCC>
