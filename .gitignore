@@ -4,4 +4,5 @@ __astcache/
 __history/
 Build/
 Release/
-
+.vs/
+__pycache__/
