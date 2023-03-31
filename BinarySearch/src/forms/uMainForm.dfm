@@ -2,20 +2,25 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Binary Search'
-  ClientHeight = 97
-  ClientWidth = 480
+  ClientHeight = 91
+  ClientWidth = 444
   Color = clBtnFace
+  Constraints.MinHeight = 150
+  Constraints.MinWidth = 460
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = mmMain
+  OldCreateOrder = True
+  OnClose = FormClose
+  PixelsPerInch = 96
   TextHeight = 13
   object MainLabel: TLabel
     Left = 0
     Top = 0
-    Width = 480
+    Width = 444
     Height = 19
     Align = alTop
     Caption = #1055#1088#1086#1075#1088#1072#1084#1084#1072' '#1076#1083#1103' '#1091#1075#1072#1076#1099#1074#1072#1085#1080#1103' '#1095#1080#1089#1083#1072' '#1073#1080#1085#1072#1088#1085#1099#1084' '#1089#1087#1086#1089#1086#1073#1086#1084
@@ -30,7 +35,7 @@ object MainForm: TMainForm
   object LabelNumber: TLabel
     Left = 0
     Top = 19
-    Width = 480
+    Width = 444
     Height = 19
     Align = alTop
     Caption = '000 - '#1041#1086#1083#1100#1096#1077', '#1084#1077#1085#1100#1096#1077' '#1080#1083#1080' '#1091#1075#1072#1076#1072#1083'?'
@@ -44,8 +49,8 @@ object MainForm: TMainForm
   end
   object GridPanel1: TGridPanel
     Left = 0
-    Top = 47
-    Width = 480
+    Top = 41
+    Width = 444
     Height = 31
     Align = alBottom
     BevelOuter = bvNone
@@ -85,7 +90,7 @@ object MainForm: TMainForm
       AlignWithMargins = True
       Left = 30
       Top = 3
-      Width = 100
+      Width = 88
       Height = 25
       Margins.Left = 30
       Margins.Right = 30
@@ -95,9 +100,9 @@ object MainForm: TMainForm
     end
     object Button2: TButton
       AlignWithMargins = True
-      Left = 190
+      Left = 178
       Top = 3
-      Width = 100
+      Width = 88
       Height = 25
       Margins.Left = 30
       Margins.Right = 30
@@ -107,9 +112,9 @@ object MainForm: TMainForm
     end
     object Button3: TButton
       AlignWithMargins = True
-      Left = 350
+      Left = 326
       Top = 3
-      Width = 100
+      Width = 88
       Height = 25
       Margins.Left = 30
       Margins.Right = 30
@@ -120,8 +125,8 @@ object MainForm: TMainForm
   end
   object sbMain: TStatusBar
     Left = 0
-    Top = 78
-    Width = 480
+    Top = 72
+    Width = 444
     Height = 19
     Panels = <
       item
@@ -163,6 +168,9 @@ object MainForm: TMainForm
       end
       object N4: TMenuItem
         Action = aShowSettingsForm
+      end
+      object N6: TMenuItem
+        Action = aShowCalcAgeForm
       end
     end
   end
@@ -214,6 +222,11 @@ object MainForm: TMainForm
       Category = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
       Caption = #1040#1074#1090#1086#1074#1099#1095#1080#1089#1083#1077#1085#1080#1077
       OnExecute = aAutoSearchExecute
+    end
+    object aShowCalcAgeForm: TAction
+      Category = #1060#1086#1088#1084#1099
+      Caption = #1059#1079#1085#1072#1090#1100' '#1089#1074#1086#1081' '#1074#1086#1079#1088#1072#1089#1090
+      OnExecute = aShowCalcAgeFormExecute
     end
   end
 end

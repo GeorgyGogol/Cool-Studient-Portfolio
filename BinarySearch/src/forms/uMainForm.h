@@ -2,6 +2,8 @@
 
 #ifndef uMainFormH
 #define uMainFormH
+
+#include "Calcer.h"
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Controls.hpp>
@@ -13,7 +15,6 @@
 #include <Menus.hpp>
 #include <PlatformDefaultStyleActnCtrls.hpp>
 #include <ComCtrls.hpp>
-#include <System.Actions.hpp>
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
@@ -40,6 +41,8 @@ __published:	// IDE-managed Components
 	TMenuItem *N2;
 	TMenuItem *N4;
 	TMenuItem *N5;
+	TAction *aShowCalcAgeForm;
+	TMenuItem *N6;
 	void __fastcall aShowSettingsFormExecute(TObject *Sender);
 	void __fastcall aStartExecute(TObject *Sender);
 	void __fastcall aLessExecute(TObject *Sender);
@@ -47,16 +50,16 @@ __published:	// IDE-managed Components
 	void __fastcall aResetExecute(TObject *Sender);
 	void __fastcall aReadyExecute(TObject *Sender);
 	void __fastcall aAutoSearchExecute(TObject *Sender);
+	void __fastcall aShowCalcAgeFormExecute(TObject *Sender);
+	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 
 private:	// User declarations
+	Calcer* Core;
+
 	void SetIsRun(bool state);
-	void Reset();
-	void Start();
+	void TryLoadLastTry();
 
-	double CurrentNumber;
-	double delta;
-	unsigned int CurrentStep;
-
+	void UpdatePanel();
 	void UpdateCaption();
 
 	void PanelSetMin(int val);

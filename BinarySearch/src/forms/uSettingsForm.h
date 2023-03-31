@@ -23,17 +23,22 @@ __published:	// IDE-managed Components
 	TBitBtn *BitBtn2;
 	TEdit *eAccuracy;
 	TLabel *Label3;
+	TBitBtn *bbSetDefault;
+	void __fastcall bbSetDefaultClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 	__fastcall TSettings(TComponent* Owner);
+
+	void setMinValue(int value);
+	void setMaxValue(int value);
 
 	int getMinValue() const;
 	int getMaxValue() const;
 	int getAccuaryRang() const;
 	double getTargetAccuracy() const;
 
-	__property int MinValue = { read = getMinValue };
-	__property int MaxValue = { read = getMaxValue };
+	__property int MinValue = { read = getMinValue, write = setMinValue };
+	__property int MaxValue = { read = getMaxValue, write = setMaxValue };
 	__property double Accuracy = { read = getTargetAccuracy };
 
 };

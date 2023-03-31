@@ -3,7 +3,7 @@ object Settings: TSettings
   Top = 0
   BorderStyle = bsSingle
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 137
+  ClientHeight = 160
   ClientWidth = 276
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,7 @@ object Settings: TSettings
   Padding.Top = 3
   Padding.Right = 6
   Padding.Bottom = 3
-  OldCreateOrder = False
+  OldCreateOrder = True
   Position = poOwnerFormCenter
   PixelsPerInch = 96
   TextHeight = 13
@@ -24,7 +24,7 @@ object Settings: TSettings
     Left = 6
     Top = 3
     Width = 264
-    Height = 104
+    Height = 127
     Align = alClient
     BevelOuter = bvNone
     Caption = 'GridPanel1'
@@ -85,17 +85,16 @@ object Settings: TSettings
       end>
     ShowCaption = False
     TabOrder = 0
+    ExplicitHeight = 104
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 140
-      Height = 27
+      Width = 55
+      Height = 13
       Align = alClient
       Alignment = taCenter
       Caption = #1053#1072#1095#1072#1083#1100#1085#1086#1077
       Layout = tlCenter
-      ExplicitWidth = 55
-      ExplicitHeight = 13
     end
     object eMinVal: TEdit
       AlignWithMargins = True
@@ -110,14 +109,12 @@ object Settings: TSettings
     object Label2: TLabel
       Left = 0
       Top = 27
-      Width = 140
-      Height = 27
+      Width = 49
+      Height = 13
       Align = alClient
       Alignment = taCenter
       Caption = #1050#1086#1085#1077#1095#1085#1086#1077
       Layout = tlCenter
-      ExplicitWidth = 49
-      ExplicitHeight = 13
     end
     object eMaxVal: TEdit
       AlignWithMargins = True
@@ -138,24 +135,21 @@ object Settings: TSettings
       Align = alClient
       TabOrder = 2
       Text = '2'
-      ExplicitLeft = 146
     end
     object Label3: TLabel
       Left = 0
       Top = 54
-      Width = 140
-      Height = 27
+      Width = 130
+      Height = 13
       Align = alClient
       Alignment = taCenter
       Caption = #1055#1086#1075#1088#1077#1096#1085#1086#1089#1090#1100', '#1089#1090#1077#1087#1077#1085#1100' 10'
       Layout = tlCenter
-      ExplicitWidth = 130
-      ExplicitHeight = 13
     end
   end
   object FlowPanel1: TFlowPanel
     Left = 6
-    Top = 107
+    Top = 130
     Width = 264
     Height = 27
     Align = alBottom
@@ -164,6 +158,7 @@ object Settings: TSettings
     FlowStyle = fsRightLeftTopBottom
     ShowCaption = False
     TabOrder = 1
+    ExplicitTop = 107
     object BitBtn1: TBitBtn
       Left = 189
       Top = 0
@@ -183,6 +178,17 @@ object Settings: TSettings
       Kind = bkOK
       ParentDoubleBuffered = False
       TabOrder = 1
+    end
+    object bbSetDefault: TBitBtn
+      Left = 39
+      Top = 0
+      Width = 75
+      Height = 25
+      Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100'...'
+      DoubleBuffered = True
+      ParentDoubleBuffered = False
+      TabOrder = 2
+      OnClick = bbSetDefaultClick
     end
   end
 end

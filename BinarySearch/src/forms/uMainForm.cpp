@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include <cmath>
 #pragma hdrstop
 
 #include "uMainForm.h"
 #include "uSettingsForm.h"
+#include "uCalcAgeForm.h"
 #include "udAimAuto.h"
+
+#include "SettingsFile.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -15,9 +17,12 @@ TMainForm *MainForm;
 __fastcall TMainForm::TMainForm(TComponent* Owner)
 	: TForm(Owner)
 {
-	Reset();
-	PanelSetMax(100);
-	PanelSetMin(0);
+	TryLoadLastTry();
+    LabelNumber->Caption = "Приложение загружено...";
+
+#ifdef _DEBUG
+	Caption = Caption + " (Debug)";
+#endif
 }
 //---------------------------------------------------------------------------
 void TMainForm::SetIsRun(bool state)
@@ -29,33 +34,44 @@ void TMainForm::SetIsRun(bool state)
 	aReady->Enabled = state;
 }
 //---------------------------------------------------------------------------
-void TMainForm::Reset()
+void TMainForm::TryLoadLastTry()
 {
-	CurrentNumber = 0;
-	CurrentStep = 0;
-	delta = 0;
-	PanelSetStep(0);
-    LabelNumber->Caption = "Только бинарным. Только.";
+	int min = 0, max = 100;
+
+	if (FileExists(SETTINGS)) {
+		TIniFile* file = new TIniFile(SETTINGS);
+
+		// Подтянем последнее
+		min = file->ReadInteger("Last", "Min", 0);
+		max = file->ReadInteger("Last", "Max", 100);
+
+		// Если есть дефолт - переопределим последнее
+		min = file->ReadInteger("Default", "Min", min);
+		max = file->ReadInteger("Default", "Max", max);
+
+		delete file;
+	}
+
+	Core = new Calcer(min, max);
+	UpdatePanel();
 }
 //---------------------------------------------------------------------------
-void TMainForm::Start()
+void TMainForm::UpdatePanel()
 {
-	delta = 1.0 * (Settings->MaxValue - Settings->MinValue) / 2.0;
-	CurrentNumber = Settings->MinValue + delta;
-	CurrentStep = 1;
-
-	UpdateCaption();
+	PanelSetMax(Core->Max);
+	PanelSetMin(Core->Min);
+	PanelSetStep(Core->StepCount);
 }
 //---------------------------------------------------------------------------
 void TMainForm::UpdateCaption()
 {
 	String text = "Текущее число: ";
 
-	text += FloatToStr( (int)(1.0 * CurrentNumber * Settings->Accuracy) / (1.0 * Settings->Accuracy) );
+	text += FloatToStr(Core->getCurrentNumber());
 
 	text += " - Больше, меньше или угадал?";
 	LabelNumber->Caption = text;
-	PanelSetStep(CurrentStep);
+	PanelSetStep(Core->StepCount);
 }
 //---------------------------------------------------------------------------
 void TMainForm::PanelSetMin(int val)
@@ -80,34 +96,42 @@ void TMainForm::PanelSetAccuracy(int val)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aShowSettingsFormExecute(TObject *Sender)
 {
+	int min = Core->Min, max = Core->Max;
+
+	Settings->MinValue = min;
+	Settings->MaxValue = max;
 	Settings->ShowModal();
-	PanelSetMin(Settings->MinValue);
-	PanelSetMax(Settings->MaxValue);
+
+	try
+	{
+		Core->Min = Settings->MinValue;
+		Core->Max = Settings->MaxValue;
+	}
+	catch(Exception& e) {
+		Application->ShowException(&e);
+		Core->Min = min;
+		Core->Max = max;
+	}
+	UpdatePanel();
 	PanelSetAccuracy(Settings->getAccuaryRang());
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aStartExecute(TObject *Sender)
 {
 	SetIsRun(true);
-	Start();
+	Core->Start();
 	UpdateCaption();
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aLessExecute(TObject *Sender)
 {
-	CurrentNumber -= delta / 2;
-	delta /= 2;
-	++CurrentStep;
-
+	Core->Less();
 	UpdateCaption();
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aMoreExecute(TObject *Sender)
 {
-	CurrentNumber += delta / 2;
-	delta /= 2;
-	++CurrentStep;
-
+	Core->More();
 	UpdateCaption();
 }
 //---------------------------------------------------------------------------
@@ -115,23 +139,23 @@ void __fastcall TMainForm::aMoreExecute(TObject *Sender)
 void __fastcall TMainForm::aResetExecute(TObject *Sender)
 {
 	SetIsRun(false);
-    Reset();
+	Core->Reset();
+    UpdatePanel();
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aReadyExecute(TObject *Sender)
 {
-	double number = int(CurrentNumber * Settings->Accuracy) / Settings->Accuracy;
+	Core->Stop();
+	SetIsRun(false);
 
 	String message = "Число ";
-	message += FloatToStr(number);
+	message += FloatToStr(Core->getCurrentNumber());
 	message += " было угадано за ";
-	message += IntToStr(int(CurrentStep));
+	message += IntToStr(Core->StepCount);
 	message += " итераций";
 
 	LabelNumber->Caption = message;
 	ShowMessage(message);
-
-	SetIsRun(false);
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::aAutoSearchExecute(TObject *Sender)
@@ -145,19 +169,27 @@ void __fastcall TMainForm::aAutoSearchExecute(TObject *Sender)
 
 	double aim = dAimAuto->eAim->Text.ToDouble();
 
-	aStart->Execute();
+    aStart->Execute();
 
-	while ( std::fabs(aim - CurrentNumber) > (1 / Settings->Accuracy) ){
-
-		if (CurrentNumber > aim) {
-			aLess->Execute();
-		}
-		else {
-			aMore->Execute();
-		}
-	};
+	Core->Calc(aim, 1.0 / Settings->Accuracy);
 
 	aReady->Execute();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aShowCalcAgeFormExecute(TObject *Sender)
+{
+    CalcAge->Show();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	TIniFile* file = new TIniFile(SETTINGS);
+	file->WriteInteger("Last", "Min", Core->Min);
+	file->WriteInteger("Last", "Max", Core->Max);
+	delete file;
+	delete Core;
 }
 //---------------------------------------------------------------------------
 
