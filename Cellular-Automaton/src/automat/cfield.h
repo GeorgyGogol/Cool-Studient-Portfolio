@@ -42,7 +42,7 @@ public:
     int getHeight() const noexcept; ///< Получить Высоту
     int getWidth() const noexcept; ///< Получить ширину
 
-    int getAge() const noexcept; ///< Получить возраст
+    unsigned int getAge() const noexcept; ///< Получить возраст
 
     void SetCloseTopBottom(bool state) noexcept; ///< Установить замкнутость верх-низ
     bool GetCloseTopBottom() const noexcept;
@@ -52,7 +52,7 @@ public:
 
     const char* getFieldName() const noexcept;
 
-    /// @brief Получить клетку в координате
+    /// @name Получить клетку в координате
     /// @{
     cCell* getCell(unsigned int x, unsigned int y) const;
     cCell* getCell(int x, int y) const;
@@ -61,7 +61,7 @@ public:
     /// @brief Получить состояние клетки
     bool getCellStatus(int x, int y) const;
 
-    /// @brief Установить состояние клетки
+    /// @name Установить состояние клетки
     /// @{
     void setCell(unsigned int x, unsigned int y, bool status);
     void setCell(int x, int y, bool status);
@@ -69,11 +69,16 @@ public:
 
     void reverseCell(unsigned int x, unsigned int y); ///< Переключить состояние
 
-    bool step(); ///< Сделать шаг
+    /// @brief Сделать шаг
+    /// @return Можно ли сделать следующий шаг
+    bool step();
+
     unsigned int getAliveCount() const noexcept; ///< Количество живых клеток
 
     unsigned int getSize() const noexcept; ///< Размер объекта
 
+    void Clear(); ///< Очистить поле
+    void FillRandome(); ///< Заполнить случайным образом
 
 };
 

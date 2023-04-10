@@ -1,5 +1,8 @@
 #include "cfield.h"
 
+#include <random>
+#include <time.h>
+
 namespace automat {
 
 cField::cField(unsigned int width, unsigned int height) :
@@ -132,9 +135,9 @@ int cField::getWidth() const noexcept
     return static_cast<int>(fSettings.Width);
 }
 
-int cField::getAge() const noexcept
+unsigned int cField::getAge() const noexcept
 {
-    return static_cast<int>(Age);
+    return Age;
 }
 
 void cField::SetCloseTopBottom(bool state) noexcept
@@ -255,6 +258,25 @@ unsigned int cField::getSize() const noexcept
     out += static_cast<unsigned int>(sizeof(cCell)) * fSettings.Height * fSettings.Width;
 
     return out;
+}
+
+void cField::Clear()
+{
+    for (unsigned int y = 0; y < fSettings.Height; ++y) {
+        for (unsigned int x = 0; x < fSettings.Width; ++x) {
+            Field[y][x] = false;
+        }
+    }
+}
+
+void cField::FillRandome()
+{
+    srand(uint32_t(time(nullptr)));
+    for (unsigned int y = 0; y < fSettings.Height; ++y) {
+        for (unsigned int x = 0; x < fSettings.Width; ++x) {
+            setCell(x, y, rand() % 2);
+        }
+    }
 }
 
 }

@@ -12,12 +12,14 @@
 Так же не учтено, что при статичной картине симуляция должна прекратить
 делать итерации.
 
-Актуальная версия: [Альфа-2](TODO.md#alfa-2)
+Актуальная версия: [Альфа-3](ChangeLog.md#alfa-3)
 
+Пак иконок: [Picol](https://picol.org) 1 Icons, 
+взято с https://icon-icons.com/ru/pack/Picol-1-Icons/912
 
 # Идея оптимизации алгоритма
 
-Идея взята с https://en.wikipedia.org/wiki/Conway's_Game_of_Life
+Идея взята с https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 
 Вычитал 08.02.2023, когда искал, какие фигуры можно создать.
 

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="Utilites">
+      <UniqueIdentifier>{0ea0f570-0cd4-4f88-b2ed-64910c6b9d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Automat">
+      <UniqueIdentifier>{4f506c2c-6898-4e47-843f-1e3ac9b21601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\States">
+      <UniqueIdentifier>{86034716-09de-486f-9d20-11c01b903e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\States\Sys">
+      <UniqueIdentifier>{68554f8d-c0e6-42c8-aab4-a3828e3a326f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{72de8d84-c14a-4532-9fdc-24a742ec9e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\Widgets">
+      <UniqueIdentifier>{19af9041-e05a-4182-9e26-6b8b336a4f08}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\forms\autofillsettingsform.cpp">
+      <Filter>Form Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\fieldsettingsform.cpp">
+      <Filter>Form Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\mainwindow.cpp">
+      <Filter>Form Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\automat\ccell.cpp">
+      <Filter>Automat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\automat\cfield.cpp">
+      <Filter>Automat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\automat\cfieldsettings.cpp">
+      <Filter>Automat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\automat\cfileserver.cpp">
+      <Filter>Automat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\widgets\mainformstatusbar.cpp">
+      <Filter>Form Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\states\stateempty.cpp">
+      <Filter>Form Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\statemanager.cpp">
+      <Filter>Form Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\states\staterun.cpp">
+      <Filter>Form Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\states\statewithfield.cpp">
+      <Filter>Form Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\states\stategameover.cpp">
+      <Filter>Form Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\state\Interfaces\iwinstate.cpp">
+      <Filter>Form Files\States\Sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\figurelibrary.cpp">
+      <Filter>Form Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\widgets\controlledgridscene.cpp">
+      <Filter>Form Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\widgets\gcell.cpp">
+      <Filter>Form Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forms\widgets\fieldinfobox.cpp">
+      <Filter>Form Files\Widgets</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\automat\ccell.h">
+      <Filter>Automat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\automat\cfield.h">
+      <Filter>Automat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\automat\cfieldsettings.h">
+      <Filter>Automat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\automat\cfileserver.h">
+      <Filter>Automat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\automat\core.h">
+      <Filter>Automat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\widgets\mainformstatusbar.h">
+      <Filter>Form Files\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\state\states\stateempty.h">
+      <Filter>Form Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\state\statemanager.h">
+      <Filter>Form Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\state\states\statewithfield.h">
+      <Filter>Form Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utilites\windowpointkeeper.h">
+      <Filter>Utilites</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\state\states\stategameover.h">
+      <Filter>Form Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forms\state\Interfaces\iwinstate.h">
+      <Filter>Form Files\States\Sys</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\forms\autofillsettingsform.h">
+      <Filter>Form Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\fieldsettingsform.h">
+      <Filter>Form Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\mainwindow.h">
+      <Filter>Form Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\state\states\staterun.h">
+      <Filter>Form Files\States</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\figurelibrary.h">
+      <Filter>Form Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\widgets\controlledgridscene.h">
+      <Filter>Form Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\widgets\gcell.h">
+      <Filter>Form Files\Widgets</Filter>
+    </QtMoc>
+    <QtMoc Include="src\forms\widgets\fieldinfobox.h">
+      <Filter>Form Files\Widgets</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="src\forms\autofillsettingsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="src\forms\fieldsettingsform.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="src\forms\mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="src\forms\figurelibrary.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="src\forms\widgets\fieldinfobox.ui">
+      <Filter>Form Files\Widgets</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="res\mainresources.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+</Project>

@@ -1,10 +1,8 @@
 #ifndef MAINFORMSTATUSBAR_H
 #define MAINFORMSTATUSBAR_H
 
-
 #include <QStatusBar>
 #include <QLabel>
-//#include "../../automat/core.h"
 
 class MainFormStatusBar : public QStatusBar
 {
@@ -14,12 +12,13 @@ public:
 
 private:
     QLabel* worldAge;
-    QLabel *aliveCount;
+    QLabel* aliveCount;
+    QLabel* MapSize;
 
 public slots:
-    //void updateInformation(const automat::cField* field);
-    void UpdateWorldAge(const unsigned int& age);
-    void UpdateAliveCount(const unsigned int& count);
+    void UpdateWorldAge(unsigned int age);
+    void UpdateAliveCount(unsigned int count);
+    void UpdateMapSize(int width, int height);
 
     void Clear();
 

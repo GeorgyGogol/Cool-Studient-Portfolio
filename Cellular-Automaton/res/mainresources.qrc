@@ -7,8 +7,10 @@
         <file alias="stop">icons/img_stop.png</file>
         <file alias="accept">icons/img_accept.png</file>
         <file alias="reject">icons/img_cancel.png</file>
+        <file alias="main_icon">icons/img_main.png</file>
     </qresource>
     <qresource prefix="/txt">
         <file alias="About">txts/About.txt</file>
+        <file alias="Rules">txts/Rules.txt</file>
     </qresource>
 </RCC>

@@ -23,35 +23,113 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG += c++11
+QMAKE_LFLAGS += -static -static-libgcc
+
+#
+# Windows, widgets and new files
+#
+
+INCLUDEPATH += \
+    src/forms \
+    src/forms/widgets
+
+HEADERS += \
+    src/forms/autofillsettingsform.h \
+    src/forms/fieldsettingsform.h \
+    src/forms/figurelibrary.h \
+    src/forms/mainwindow.h \
+    src/forms/widgets/fieldinfobox.h \
+    src/forms/widgets/gcell.h \
+    src/forms/widgets/mainformstatusbar.h \
+    src/forms/widgets/controlledgridscene.h
 
 SOURCES += \
-        src/automat/ccell.cpp \
-        src/automat/cfield.cpp \
-        src/automat/cfieldsettings.cpp \
-        src/automat/cfileserver.cpp \
-        src/forms/fieldsettingsform.cpp \
-        src/forms/mainwindow.cpp \
-        src/forms/widgets/gcell.cpp \
-        src/forms/widgets/mainformstatusbar.cpp \
-        src/main.cpp
-		
+    src/forms/autofillsettingsform.cpp \
+    src/forms/fieldsettingsform.cpp \
+    src/forms/figurelibrary.cpp \
+    src/forms/mainwindow.cpp \
+    src/forms/widgets/fieldinfobox.cpp \
+    src/forms/widgets/gcell.cpp \
+    src/forms/widgets/mainformstatusbar.cpp \
+    src/forms/widgets/controlledgridscene.cpp
+
+FORMS += \
+    src/forms/autofillsettingsform.ui \
+    src/forms/fieldsettingsform.ui \
+    src/forms/figurelibrary.ui \
+    src/forms/mainwindow.ui \
+    src/forms/widgets/fieldinfobox.ui
+
+#
+# Window States
+#
+
+INCLUDEPATH += \
+    src/forms/state \
+    src/forms/state/Interfaces \
+    src/forms/state/states
+
+HEADERS += \
+    src/forms/state/Interfaces/iwinstate.h \
+    src/forms/state/statemanager.h \
+    src/forms/state/states/stateempty.h \
+    src/forms/state/states/staterun.h \
+    src/forms/state/states/statewithfield.h \
+    src/forms/state/states/stategameover.h
+
+SOURCES += \
+    src/forms/state/Interfaces/iwinstate.cpp \
+    src/forms/state/statemanager.cpp \
+    src/forms/state/states/stateempty.cpp \
+    src/forms/state/states/staterun.cpp \
+    src/forms/state/states/statewithfield.cpp \
+    src/forms/state/states/stategameover.cpp
+
+#
+# Automat
+#
+
+INCLUDEPATH += \
+    src/automat
+
 HEADERS += \
     src/automat/ccell.h \
     src/automat/cfield.h \
     src/automat/cfieldsettings.h \
     src/automat/cfileserver.h \
-    src/automat/core.h \
-    src/forms/fieldsettingsform.h \
-    src/forms/mainwindow.h \
-    src/forms/widgets/gcell.h \
-    src/forms/widgets/mainformstatusbar.h
-	
-FORMS += \
-    src/forms/fieldsettingsform.ui \
-    src/forms/mainwindow.ui
+    src/automat/core.h
+
+SOURCES += \
+    src/automat/ccell.cpp \
+    src/automat/cfield.cpp \
+    src/automat/cfieldsettings.cpp \
+    src/automat/cfileserver.cpp
+
+#    
+# Recources and other
+#
+
+INCLUDEPATH += \
+    src \
+    src/utilites
+
+HEADERS += \
+    src/utilites/windowpointkeeper.h
+
+SOURCES += \
+    src/main.cpp
 
 RESOURCES += \
-    res/mainresources.qrc
+    res/mainresources.qrc \
+    versioninfo.rc
+
+#
+# Windows app info
+#
+
+RC_FILE = versioninfo.rc
+
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -12,6 +12,9 @@ public:
     cFileServer();
 
 private:
+    int defineFileVersion(char* fileVer);
+
+    cField* fVer2(const char* path);
 
 public:
     void SaveTo(cField* field, const char* path);

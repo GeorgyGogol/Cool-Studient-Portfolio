@@ -1,10 +1,17 @@
 #include "gcell.h"
 
-GCell::GCell(automat::cCell* p_cell, QGraphicsItem* parentGrahpics) :
-    /*QObject(nullptr),*/
-    QGraphicsItem(parentGrahpics),
-    pCell(p_cell), CanChange(false)
+GCell::GCell(automat::cCell* p_cell) :
+    QGraphicsObject(nullptr),
+    pCell(p_cell)
 {
+}
+
+bool GCell::askCanChange() {
+    bool out = false;
+
+    emit getCanChangeState(out, this);
+
+    return out;
 }
 
 QRectF GCell::boundingRect() const
@@ -19,13 +26,19 @@ void GCell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->save();
 
+	QRectF dCell = boundingRect();
     painter->setPen(Qt::black);
-    painter->drawRect(boundingRect());
+    painter->drawRect(dCell);
 
     if (pCell->getStatus()) {
         painter->setBrush(Qt::black);
-        QRect rect(2, 2, 46, 46);
-        painter->drawRect(rect);
+
+		dCell.setX(dCell.x() + 2);
+		dCell.setWidth(dCell.width() - dCell.x());
+		dCell.setY(dCell.y() + 2);
+		dCell.setHeight(dCell.height() - dCell.y());
+
+        painter->drawRect(dCell);
     }
 
     painter->restore();
@@ -33,15 +46,11 @@ void GCell::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 void GCell::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (!CanChange) return;
-
-    pCell->switchStatus();
+    if (askCanChange()) {
+        pCell->switchStatus();
+    }
 
     QGraphicsItem::mousePressEvent(event);
 }
 
-void GCell::setCanChangeState(bool State)
-{
-    CanChange = State;
-}
 

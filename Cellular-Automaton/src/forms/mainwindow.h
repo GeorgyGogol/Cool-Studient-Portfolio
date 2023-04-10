@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsScene>
-#include "../automat/core.h"
-#include "widgets/gcell.h"
-#include <QTimer>
-#include <QLabel>
+
+#include "statemanager.h"
+#include "automat/core.h"
+#include "controlledgridscene.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -15,39 +15,55 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    //Q_PROPERTY(Ui::MainWindow* UI READ getUI)
 
 private:
-    QTimer* Timer;
-    QGraphicsScene* mainScene;
+    states::StateManager* WindowStatus;
     automat::cField* Field;
-
-    bool isRun;
-    unsigned int delay;
+    ControlledGridScene* mainScene;
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
-    void CreateField(const automat::FieldSettings& fs);
-    void DeleteField();
-    void LoadField(QString path);
-    void UpdateGUIState();
-    bool doStep();
+    void CreateGraphicField();
+    void ClearGraphicField();
 
 private slots:
-    void TimerTickSlot();
-
+    // Программа
     void on_action_CreateNewField_triggered();
     void on_action_CloseField_triggered();
-    void on_action_SaveAs_triggered();
-    void on_action_Load_triggered();
-    void on_action_OneStep_triggered();
+    void on_action_SaveFieldAs_triggered();
+    void on_action_LoadField_triggered();
+
+    // Поле
+    void on_action_AutofillField_triggered();
+    void on_action_ClearField_triggered();
+
+    // Симуляция
     void on_action_RunStop_triggered();
+
+    // Справка
     void on_action_About_triggered();
+    void on_action_Rules_triggered();
+
+    // Прочие
+    void on_ScaleBox_valueChanged(double arg1);
+
+
+public slots:
+    void UpdateTick();
+    void StepTick();
+
+    void UpdateMapSizeInfo();
 
 private:
     Ui::MainWindow *ui;
+
+public:
+    Ui::MainWindow* getUI() const;
+    void setCanChangeCell(bool state);
 
 };
 

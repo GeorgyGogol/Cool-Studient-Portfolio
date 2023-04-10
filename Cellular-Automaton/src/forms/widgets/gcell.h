@@ -1,26 +1,26 @@
 #ifndef GCELL_H
 #define GCELL_H
 
-
-#include <QObject>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QPainter>
-#include "../../automat/ccell.h"
+#include "ccell.h"
 
 
 class GCell :
-        //public QObject,
-        public QGraphicsItem
-        //public automat::cCell
+        public QGraphicsObject
 {
-    //Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit GCell(automat::cCell* p_cell, /*QObject *parentObject = nullptr,*/ QGraphicsItem* parentGrahpics = nullptr);
+    explicit GCell(automat::cCell* p_cell);
+
+signals:
+    void getCanChangeState(bool& state, const GCell* pSelf);
 
 private:
     automat::cCell* pCell;
-    bool CanChange;
+
+    bool askCanChange();
 
 private:
     QRectF boundingRect() const;
@@ -28,10 +28,6 @@ private:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
-public:
-    void setCanChangeState(bool State);
-
 
 };
 

@@ -11,151 +11,80 @@
 #include <QFileDialog>
 #include <QTextCodec>
 
+#include "widgets/gcell.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    WindowStatus(new states::StateManager(this)),
     Field(nullptr),
-    isRun(false), delay(0),
+    mainScene(new ControlledGridScene(this)),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->action_OneStep, &QAction::triggered, this, &MainWindow::StepTick);
+    connect(ui->action_CloseField, &QAction::triggered, ui->sbMain, &MainFormStatusBar::Clear);
 
-    mainScene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(mainScene);
+    //mainScene->CreateFieldView(ui->gv_Field);
+    ui->gv_Field->setScene(mainScene);
 
-    Timer = new QTimer(this);
-    connect(Timer, &QTimer::timeout, this, &MainWindow::TimerTickSlot);
-    Timer->setInterval(1000 / 10);
+    ui->gv_Minimap->setScene(mainScene);
 
-    UpdateGUIState();
+    WindowStatus->SetStateEmpty();
+
+    ui->pb_ShowMinimap->hide();
 }
 
 MainWindow::~MainWindow()
 {
+    delete WindowStatus;
+
     delete ui;
-    DeleteField();
     delete mainScene;
+
+    if(Field) delete Field;
 }
 
-void MainWindow::CreateField(const automat::FieldSettings& fs)
-{
-    if (Field) return;
-
-    Field = new automat::cField(fs);
-
-    GCell* cell;
-    for (auto y = 0; y < Field->getHeight(); ++y){
-        for (auto x = 0; x < Field->getWidth(); ++x) {
-            cell = new GCell(Field->getCell(x, y));
-
-            cell->setY(y * 50);
-            cell->setX(x * 50);
-            cell->setCanChangeState(true);
-
-            mainScene->addItem(cell);
-            cell = nullptr;
-        }
-    }
-
-    Timer->start();
-}
-
-void MainWindow::DeleteField()
+void MainWindow::CreateGraphicField()
 {
     if (!Field) return;
 
-    mainScene->clear();
-    Timer->stop();
-    delete Field;
-    Field = nullptr;
-}
-
-void MainWindow::LoadField(QString path)
-{
-    if (Field) return;
-
-    automat::cFileServer server;
-
-    try {
-        Field = server.LoadFrom(path.toStdString().c_str());
-    } catch (...) {
-        return;
-    }
-
-
-    mainScene->clear();
-    mainScene->update();
-
-    GCell* cell;
+    mainScene->setSceneRect(0, 0, 50 * Field->getWidth(), 50 * Field->getHeight());
     for (auto y = 0; y < Field->getHeight(); ++y){
         for (auto x = 0; x < Field->getWidth(); ++x) {
-            cell = new GCell(Field->getCell(x, y));
-
-            cell->setY(y * 50);
-            cell->setX(x * 50);
-            cell->setCanChangeState(true);
-
-            mainScene->addItem(cell);
-            cell = nullptr;
+            mainScene->createCellAt(x, y, Field->getCell(x, y));
         }
     }
 
-    Timer->start();
+    qreal sx = 1.0, sy = 1.0;
+    sx = 1.0 * ui->gv_Minimap->width() / mainScene->width();
+    sy = 1.0 * ui->gv_Minimap->height() / mainScene->height();
+    ui->gv_Minimap->resetTransform();
+    ui->gv_Minimap->scale(sx, sy);
 }
 
-void MainWindow::UpdateGUIState()
+void MainWindow::ClearGraphicField()
 {
-    bool state = Field;
-
-    ui->action_CreateNewField->setEnabled(!state);
-    ui->action_CloseField->setEnabled(state);
-    ui->action_SaveAs->setEnabled(state);
-    ui->action_CloseField->setEnabled(state);
-
-    ui->action_OneStep->setEnabled(state && !isRun);
-    ui->action_RunStop->setEnabled(state);
-
-    if (state){
-        QIcon iconState;
-        QString textState;
-        if (isRun){
-            iconState = QIcon(":/img/icons/stop");
-            textState = "Остановить";
-        }
-        else {
-            iconState = QIcon(":/img/icons/play");
-            textState = "Запустить";
-        }
-        ui->action_RunStop->setIcon(iconState);
-        ui->action_RunStop->setText(textState);
-        ui->pbRun->setIcon(iconState);
-        ui->pbRun->setText(textState);
-    }
-}
-
-bool MainWindow::doStep()
-{
-    return Field->step();
-}
-
-void MainWindow::TimerTickSlot()
-{
+    mainScene->clear();
+    mainScene->clearFocus();
     mainScene->update();
-
-    if (isRun){
-        if (delay >= 5) {
-            isRun = doStep();
-            if (!isRun) UpdateGUIState();
-            delay = 0;
-        }
-        ++delay;
-    }
-
-    //updateStatusInformation();
+    mainScene->setSceneRect(0, 0, 0, 0);
 }
 
 void MainWindow::on_action_CreateNewField_triggered()
 {
+    if(Field && 
+        QMessageBox::question(
+            this,
+            "Внимание!",
+            "Поле уже существует!\nВы действительно хотите создать новое?",
+            QMessageBox::Ok | QMessageBox::Cancel
+        ) == QMessageBox::Cancel
+    )
+    {
+        return;
+    }
+
     std::unique_ptr<FieldSettingsForm> window (new FieldSettingsForm(this));
 
     if (window->exec() == QDialog::Accepted) {
@@ -166,20 +95,46 @@ void MainWindow::on_action_CreateNewField_triggered()
         fs.CloseTopBottom = window->getTopBottomClose();
         fs.CloseLeftRight = window->getLeftRightClose();
 
-        CreateField(fs);
-    }
+        if (Field) {
+            ClearGraphicField();
+            delete Field;
+        }
+        Field = new automat::cField(fs);
 
-    UpdateGUIState();
+        switch (window->isNeedAutofill()) {
+        case 2:
+            // TODO: Настройка и
+            // fillRandom(Field, Settings);
+            break;
+
+        case 1:
+            Field->FillRandome();
+            break;
+
+        default: /* 0 -> default */
+            break;
+
+        }
+
+        WindowStatus->SetStateWithField();
+        CreateGraphicField();
+    }
 }
 
 void MainWindow::on_action_CloseField_triggered()
 {
-    DeleteField();
-    UpdateGUIState();
+    ClearGraphicField();
+    delete Field;
+    Field = nullptr;
+
+    WindowStatus->SetStateEmpty();
+    ui->sbMain->Clear();
 }
 
-void MainWindow::on_action_SaveAs_triggered()
+void MainWindow::on_action_SaveFieldAs_triggered()
 {
+	QTextCodec* codec = QTextCodec::codecForName("Windows-1251");
+
     QString fPath =
             QFileDialog::getSaveFileName(
                 this,
@@ -190,37 +145,60 @@ void MainWindow::on_action_SaveAs_triggered()
 
     if (fPath.length() < 1) return;
 
+	QByteArray correctPath = codec->fromUnicode(fPath.toUtf8());
+
     automat::cFileServer server;
-    server.SaveTo(Field, fPath.toStdString().c_str());
+    server.SaveTo(Field, correctPath.toStdString().c_str());
 }
 
-void MainWindow::on_action_Load_triggered()
+void MainWindow::on_action_LoadField_triggered()
 {
+	QTextCodec* codec = QTextCodec::codecForName("Windows-1251");
+
     QString fPath =
             QFileDialog::getOpenFileName(
                 this,
-                "Сохранить поле как...",
+                "Открыть поле...",
                 QDir::currentPath(),
                 "Field Files (*.txt);;All files (*.txt)"
                 );
 
     if (fPath.length() < 1) return;
 
-    DeleteField();
-    LoadField(fPath);
-    UpdateGUIState();
+	QByteArray correctPath = codec->fromUnicode(fPath.toUtf8());
+
+    automat::cFileServer server;
+    try {
+        Field = server.LoadFrom(correctPath.toStdString().c_str());
+        CreateGraphicField();
+        WindowStatus->SetStateWithField();
+    }
+    catch (char* message) {
+        QMessageBox::critical(this, "Ошибка загрузки!", QString(message));
+        try {
+            delete Field;
+        } catch (...) {}
+        Field = nullptr;
+        WindowStatus->SetStateEmpty();
+    }
 }
 
-void MainWindow::on_action_OneStep_triggered()
+void MainWindow::on_action_AutofillField_triggered()
 {
-    doStep();
+
+}
+
+void MainWindow::on_action_ClearField_triggered()
+{
+    Field->Clear();
 }
 
 void MainWindow::on_action_RunStop_triggered()
 {
-    delay = 0;
-    isRun = !isRun;
-    UpdateGUIState();
+    if (!WindowStatus->isRunning())
+        WindowStatus->SetStateIsRunning();
+    else
+        WindowStatus->SetStateWithField();
 }
 
 void MainWindow::on_action_About_triggered()
@@ -231,6 +209,65 @@ void MainWindow::on_action_About_triggered()
     load.setCodec(QTextCodec::codecForName("UTF-8"));
     QString sAbout = load.readAll();
 
-    QMessageBox::about(this, "Клеточный автомат", sAbout);
+    QMessageBox about(this);
+    about.setWindowTitle(windowTitle());
+    about.setIconPixmap(QPixmap(":/img/icons/main_icon"));
+    about.setText("Простейший клеточный автомат");
+    about.setInformativeText(sAbout);
+    about.exec();
 }
 
+void MainWindow::on_action_Rules_triggered()
+{    
+    QFile resAbout(":/txt/Rules");
+    resAbout.open(QIODevice::ReadOnly);
+    QTextStream load(&resAbout);
+    load.setCodec(QTextCodec::codecForName("UTF-8"));
+    QString sAbout = load.readAll();
+
+    QMessageBox::about(this, "Правила", sAbout);
+}
+
+void MainWindow::on_ScaleBox_valueChanged(double arg1)
+{
+    ui->gv_Field->resetTransform();
+    ui->gv_Field->scale(arg1, arg1);
+}
+
+void MainWindow::UpdateTick()
+{
+    mainScene->update();
+
+    ui->sbMain->UpdateAliveCount(Field->getAliveCount());
+    ui->sbMain->UpdateWorldAge(Field->getAge());
+}
+
+void MainWindow::StepTick()
+{
+    if (!Field->step()) {
+        WindowStatus->SetState<states::StateGameOver>();
+        WindowStatus->SetStateWithField();
+    }
+}
+
+void MainWindow::UpdateMapSizeInfo()
+{
+    if (Field) {
+        ui->sbMain->UpdateMapSize(Field->getWidth(), Field->getHeight());
+        ui->gbMapInformation->UpdateInfo(Field);
+    }
+    else {
+        ui->gbMapInformation->ResetInfo();
+    }
+
+}
+
+Ui::MainWindow* MainWindow::getUI() const
+{
+    return ui;
+}
+
+void MainWindow::setCanChangeCell(bool state)
+{
+    mainScene->canChange = state;
+}

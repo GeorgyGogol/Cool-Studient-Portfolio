@@ -25,6 +25,12 @@ public:
     bool getTopBottomClose() const noexcept;
     bool getLeftRightClose() const noexcept;
 
+    int isNeedAutofill() const noexcept;
+
+private slots:
+    void UserChangeAutofill();
+    void AutoDesideAutofill();
+
 };
 
 #endif // FIELDSETTINGSFORM_H

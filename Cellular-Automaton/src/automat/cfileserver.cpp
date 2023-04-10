@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include <cstring>
 
 #include "cfieldsettings.h"
 
@@ -10,6 +11,46 @@ namespace automat {
 cFileServer::cFileServer()
 {
 
+}
+
+int cFileServer::defineFileVersion(char* fileVer)
+{
+    int out = -1;
+
+    if(strcmp(fileVer, "fVer2") == 0) out = 2;
+
+    return out;
+}
+
+cField* cFileServer::fVer2(const char* path)
+{
+    using namespace std;
+
+    cField* out;
+    ifstream file(path);
+
+    if (!file.is_open()) throw "Load map error! File is not found";
+
+    string sBuf;
+    file>>sBuf;
+
+    FieldSettings fs;
+    file>>fs.FieldName;
+    file>>fs.CloseTopBottom>>fs.CloseLeftRight;
+    file>>fs.Height>>fs.Width;
+    out = new cField(fs);
+
+    bool dataBuf;
+    for (unsigned int y = 0; y < fs.Height; ++y) {
+        for (unsigned int x = 0; x < fs.Width; ++x) {
+            file>>dataBuf;
+            out->setCell(x, y, dataBuf);
+        }
+    }
+
+    file.close();
+
+    return out;
 }
 
 void cFileServer::SaveTo(cField* field, const char* path)
@@ -44,34 +85,22 @@ void cFileServer::SaveTo(cField* field, const char* path)
 
 cField* cFileServer::LoadFrom(const char* path)
 {
-    using namespace std;
-
-    cField* out;
-    ifstream file(path);
+    std::ifstream file(path);
 
     if (!file.is_open()) throw "Load map error! File is not found";
 
-    string sBuf;
+    char* sBuf = new char;
     file>>sBuf;
-    if (sBuf != "fVer2") throw "Load map error! File version is not found";
-
-    FieldSettings fs;
-    file>>fs.FieldName;
-    file>>fs.CloseTopBottom>>fs.CloseLeftRight;
-    file>>fs.Height>>fs.Width;
-    out = new cField(fs);
-
-    bool dataBuf;
-    for (unsigned int y = 0; y < fs.Height; ++y) {
-        for (unsigned int x = 0; x < fs.Width; ++x) {
-            file>>dataBuf;
-            out->setCell(x, y, dataBuf);
-        }
-    }
-
     file.close();
 
-    return out;
+    switch (defineFileVersion(sBuf))
+    {
+    case 2:
+        return fVer2(path);
+
+    default:
+        throw "Load map error! File version is not found";
+    }
 }
 
 }
